@@ -186,39 +186,11 @@ main_read_bitmap:
 
 	blt $v0, $a2, failure
 
-	la $at, bitmap_header
-	lhu $t1, 0($at)
-
-main_read_bitmap_correct_signature:
-
-	# $t0 = file size, reads little-endian number
-	move $t0, $zero
-
-	lbu $t1, 2($at)
-	or $t0, $t0, $t1
-
-	lbu $t1, 3($at)
-	sll $t1, $t1, 8
-	or $t0, $t0, $t1
-
-	lbu $t1, 4($at)
-	sll $t1, $t1, 16
-	or $t0, $t0, $t1
-
-	li $t1, BITMAP_HEADER_SIZE
-
-	la $at, data_size
-
-	# reads the remainder of the file
-
-	la $at, file_handle_input
-	lw $a0, 0($at)
+read_bitmap:
 
 	la $a1, file_buffer
 	lw $a1, 0($a1)
-
-	move $a2, $t0
-
+	li $a2, 77870 						  #load file size
 	li $v0, 14
 	syscall                               # read file
 
@@ -231,14 +203,12 @@ main_add_color:
 
 	la $at, bitmap_header
 
-	# $t0 = count of colors in palette
-	move $t0, $zero
+	move $t0, $zero						  # $t0 = count of colors in palette
 	sll $t0, $t0, 24
 
 	addiu $t0, $t0, -1
 
-	# steals last color of palette for our use
-	la $at, file_buffer
+	la $at, file_buffer					  # steals last color of palette for our use
 	lw $at, 0($at)
 
 	sll $t1, $t0, 2
@@ -255,8 +225,7 @@ main_add_color:
 	srl $t2, $t2, 8
 	sb $t2, 3($at)
 
-	# stores the palette index of the newer color
-	la $at, color_index
+	la $at, color_index					  # stores the palette index of the newer color
 	sw $t0, 0($at)
 
 	# calculates the pixel array offset in file_buffer
@@ -529,5 +498,4 @@ draw_tile_row_end:
 	b draw_tile_loop
 
 draw_tile_end:
-
 	jr $ra
