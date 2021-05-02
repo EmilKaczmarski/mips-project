@@ -23,29 +23,29 @@ bitmap_header:
 .space BITMAP_HEADER_SIZE
 
 bitmap_digit0: # '0'
-.byte 0, 0, 0, 0, 0, 0, 0, 0
-.byte 0, 1, 1, 1, 1, 1, 0, 0
-.byte 1, 1, 0, 0, 0, 0, 1, 0
-.byte 1, 0, 1, 0, 0, 0, 1, 0
-.byte 1, 0, 0, 1, 0, 0, 1, 0
-.byte 1, 0, 0, 0, 1, 0, 1, 0
-.byte 1, 0, 0, 0, 0, 1, 1, 0
+.byte 1, 1, 1, 1, 1, 1, 0, 0
+.byte 1, 0, 0, 0, 0, 0, 1, 0
+.byte 1, 0, 0, 0, 0, 0, 1, 0
+.byte 1, 0, 0, 0, 0, 0, 1, 0
+.byte 1, 0, 0, 0, 0, 0, 1, 0
+.byte 1, 0, 0, 0, 0, 0, 1, 0
+.byte 1, 0, 0, 0, 0, 0, 1, 0
 .byte 0, 1, 1, 1, 1, 1, 0, 0
 
 bitmap_digit1: # '1'
-.byte 0, 0, 0, 0, 0, 0, 0, 0
+.byte 0, 0, 0, 1, 0, 0, 0, 0
 .byte 0, 0, 0, 1, 0, 0, 0, 0
 .byte 0, 0, 0, 1, 1, 0, 0, 0
 .byte 0, 0, 0, 1, 0, 0, 0, 0
 .byte 0, 0, 0, 1, 0, 0, 0, 0
 .byte 0, 0, 0, 1, 0, 0, 0, 0
 .byte 0, 0, 0, 1, 0, 0, 0, 0
-.byte 0, 1, 1, 1, 1, 1, 1, 1
+.byte 0, 0, 1, 1, 1, 1, 0, 0
 
 bitmap_digit2: # '2'
-.byte 0, 0, 0, 0, 0, 0, 0, 0
 .byte 0, 1, 1, 1, 1, 1, 0, 0
-.byte 1, 0, 0, 0, 0, 0, 1, 0
+.byte 1, 0, 0, 0, 0, 0, 0, 0
+.byte 1, 0, 0, 0, 0, 0, 0, 0
 .byte 1, 0, 0, 0, 0, 0, 0, 0
 .byte 0, 1, 1, 1, 0, 0, 0, 0
 .byte 0, 0, 0, 0, 1, 1, 0, 0
@@ -53,28 +53,28 @@ bitmap_digit2: # '2'
 .byte 1, 1, 1, 1, 1, 1, 1, 0
 
 bitmap_digit3: # '3'
-.byte 0, 0, 0, 0, 0, 0, 0, 0
-.byte 0, 1, 1, 1, 1, 1, 1, 0
-.byte 0, 1, 0, 0, 0, 0, 0, 0
-.byte 0, 0, 1, 1, 0, 0, 0, 0
-.byte 0, 1, 0, 0, 0, 0, 0, 0
+.byte 1, 1, 1, 1, 1, 1, 0, 0
+.byte 1, 0, 0, 0, 0, 0, 0, 0
+.byte 1, 0, 0, 0, 0, 0, 0, 0
+.byte 1, 1, 1, 1, 1, 0, 0, 0
+.byte 1, 0, 0, 0, 0, 0, 0, 0
 .byte 1, 0, 0, 0, 0, 0, 0, 0
 .byte 1, 0, 0, 0, 0, 0, 1, 0
-.byte 0, 1, 1, 1, 1, 1, 0, 0
+.byte 1, 1, 1, 1, 1, 1, 0, 0
 
 bitmap_digit4: # '4'
-.byte 0, 0, 0, 0, 0, 0, 0, 0
-.byte 0, 0, 0, 0, 0, 0, 0, 0
 .byte 0, 1, 1, 0, 0, 0, 0, 0
 .byte 0, 1, 0, 1, 0, 0, 0, 0
 .byte 0, 1, 0, 0, 1, 0, 0, 0
 .byte 0, 1, 0, 0, 0, 1, 0, 0
 .byte 1, 1, 1, 1, 1, 1, 1, 0
 .byte 0, 1, 0, 0, 0, 0, 0, 0
+.byte 0, 1, 0, 0, 0, 0, 0, 0
+.byte 0, 1, 0, 0, 0, 0, 0, 0
 
 bitmap_digit5: # '5'
-.byte 0, 0, 0, 0, 0, 0, 0, 0
 .byte 1, 1, 1, 1, 1, 1, 1, 0
+.byte 0, 0, 0, 0, 0, 0, 1, 0
 .byte 0, 0, 0, 0, 0, 0, 1, 0
 .byte 0, 1, 1, 1, 1, 1, 1, 0
 .byte 1, 0, 0, 0, 0, 0, 0, 0
@@ -83,8 +83,8 @@ bitmap_digit5: # '5'
 .byte 0, 1, 1, 1, 1, 1, 0, 0
 
 bitmap_digit6: # '6'
-.byte 0, 0, 0, 0, 0, 0, 0, 0
 .byte 0, 1, 1, 1, 1, 1, 0, 0
+.byte 0, 0, 0, 0, 0, 0, 1, 0
 .byte 0, 0, 0, 0, 0, 0, 1, 0
 .byte 0, 0, 0, 0, 0, 0, 1, 0
 .byte 0, 1, 1, 1, 1, 1, 1, 0
@@ -93,9 +93,9 @@ bitmap_digit6: # '6'
 .byte 0, 1, 1, 1, 1, 1, 0, 0
 
 bitmap_digit7: # '7'
-.byte 0, 0, 0, 0, 0, 0, 0, 0
 .byte 1, 1, 1, 1, 1, 1, 1, 0
 .byte 1, 0, 0, 0, 0, 0, 1, 0
+.byte 1, 0, 0, 0, 0, 0, 0, 0
 .byte 0, 1, 0, 0, 0, 0, 0, 0
 .byte 0, 0, 1, 0, 0, 0, 0, 0
 .byte 0, 0, 0, 1, 0, 0, 0, 0
@@ -103,8 +103,8 @@ bitmap_digit7: # '7'
 .byte 0, 0, 0, 1, 0, 0, 0, 0
 
 bitmap_digit8: # '8'
-.byte 0, 0, 0, 0, 0, 0, 0, 0
 .byte 0, 1, 1, 1, 1, 1, 0, 0
+.byte 1, 0, 0, 0, 0, 0, 1, 0
 .byte 1, 0, 0, 0, 0, 0, 1, 0
 .byte 1, 0, 0, 0, 0, 0, 1, 0
 .byte 0, 1, 1, 1, 1, 1, 0, 0
@@ -113,8 +113,8 @@ bitmap_digit8: # '8'
 .byte 0, 1, 1, 1, 1, 1, 0, 0
 
 bitmap_digit9: # '9'
-.byte 0, 0, 0, 0, 0, 0, 0, 0
 .byte 0, 1, 1, 1, 1, 1, 0, 0
+.byte 1, 0, 0, 0, 0, 0, 1, 0
 .byte 1, 0, 0, 0, 0, 0, 1, 0
 .byte 1, 0, 0, 0, 0, 0, 1, 0
 .byte 1, 1, 1, 1, 1, 1, 1, 0
@@ -129,8 +129,8 @@ bitmap_dot: # '.'
 .byte 0, 0, 0, 0, 0, 0, 0, 0
 .byte 0, 0, 0, 0, 0, 0, 0, 0
 .byte 0, 0, 0, 0, 0, 0, 0, 0
-.byte 0, 0, 0, 0, 0, 1, 1, 0
-.byte 0, 0, 0, 0, 0, 1, 1, 0
+.byte 0, 0, 0, 1, 1, 0, 0, 0
+.byte 0, 0, 0, 1, 1, 0, 0, 0
 
 .align 2
 
@@ -162,9 +162,6 @@ file_buffer:
 .word 0
 
 data_size:
-.word 0
-
-color_index:
 .word 0
 
 pixel_array_pointer:
@@ -482,54 +479,6 @@ main_read_bitmap_correct_signature:
 	la $at, data_size
 	sw $v0, 0($at)
 
-main_add_color:
-
-	la $at, bitmap_header
-
-	# $t0 = count of colors in palette
-	move $t0, $zero
-	
-	lbu $t1, 46($at)
-	or $t0, $t0, $t1
-
-	lbu $t1, 47($at)
-	sll $t1, $t1, 8
-	or $t0, $t0, $t1
-
-	lbu $t1, 48($at)
-	sll $t1, $t1, 16
-	or $t0, $t0, $t1
-
-	lbu $t1, 49($at)
-	sll $t1, $t1, 24
-	or $t0, $t0, $t1
-
-	addiu $t0, $t0, -1
-
-	# steals last color of palette for our use
-	la $at, file_buffer
-	lw $at, 0($at)
-
-	sll $t1, $t0, 2
-	addu $at, $at, $t1
-
-	li $t2, PAINT_COLOR
-	
-	sb $t2, 0($at)
-	
-	srl $t2, $t2, 8
-	sb $t2, 1($at)
-
-	srl $t2, $t2, 8
-	sb $t2, 2($at)
-
-	srl $t2, $t2, 8
-	sb $t2, 3($at)
-
-	# stores the palette index of the newer color
-	la $at, color_index
-	sw $t0, 0($at)
-
 	# calculates the pixel array offset in file_buffer
 main_pixel_array_offset:
 
@@ -832,10 +781,6 @@ main_dead_end:
 # $a3: color
 ########
 draw_tile:
-
-	#la $at, color_index
-	#lw $a3, 0($at)
-	li 	$a3, 0x00000000
 	# $t4 = pointer to end of pixels array
 	la $at, pixel_array_pointer
 	lw $t0, 0($at)
@@ -857,8 +802,6 @@ draw_tile:
 	li $at, TILE_STRIDE
 	addu $t1, $t0, $at
 
-	addiu $t0, $t0, -8
-
 draw_tile_loop:
 
 	bge $t0, $t1, draw_tile_end
@@ -874,13 +817,20 @@ draw_tile_row_loop:
 	lbu $at, 0($a0)
 	beq $at, $zero, draw_tile_row_loop_continue
 
-draw_tile_row_pixel:
+draw_tile_black_row_pixel:
+
 	subu $t5, $t4, $t0
-	sb $a3,  0($t5)
+
+	li $a3, 0x00000000
+	
+	sb $a3, 0($t5)
 	srl $a3, $a3, 8
-	sb $a3,  1($t5)		#store G
+	sb $a3, 1($t5)
 	srl $a3, $a3, 8
-	sb $a3,  2($t5)
+	sb $a3, 2($t5)
+
+	srl $a3, $a3, 8
+	sb $a3, 3($t5)
 
 draw_tile_row_loop_continue:
 
