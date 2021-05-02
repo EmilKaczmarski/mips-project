@@ -876,7 +876,11 @@ draw_tile_row_loop:
 
 draw_tile_row_pixel:
 	subu $t5, $t4, $t0
-	sb $a3, 0($t5)
+	sb $a3,  0($t5)
+	srl $a3, $a3, 8
+	sb $a3,  1($t5)		#store G
+	srl $a3, $a3, 8
+	sb $a3,  2($t5)
 
 draw_tile_row_loop_continue:
 
