@@ -812,7 +812,7 @@ main_dead_end:
 .eqv TILE_SIZE 192
 
 # TILE_ROW_SIZE = how many bytes a row of an eight-by-eight tile has (8)
-.eqv TILE_ROW_SIZE 24
+.eqv TILE_ROW_SIZE 8
 
 # ROW_SIZE = how many bytes a bitmap row consumes (320)
 .eqv ROW_SIZE 960
@@ -835,7 +835,7 @@ draw_tile:
 
 	#la $at, color_index
 	#lw $a3, 0($at)
-	li 	$a3, 0x00FF0000
+	li 	$a3, 0x00000000
 	# $t4 = pointer to end of pixels array
 	la $at, pixel_array_pointer
 	lw $t0, 0($at)
