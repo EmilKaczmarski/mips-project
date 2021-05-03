@@ -3,3 +3,19 @@ BITMAP_DIB_HEADER_SIZE 40
 data size 268501812
 .eqv FLAG_READ         0
 .eqv FLAG_WRITE_CREATE 1
+
+.eqv INPUT_LIMIT 32
+
+
+# TILE_SIZE = how many bytes a full eight-by-eight tile has (8 * 8 = 64)
+.eqv TILE_SIZE 192
+
+# TILE_ROW_SIZE = how many bytes a row of an eight-by-eight tile has (8)
+.eqv TILE_ROW_SIZE 8
+
+# ROW_SIZE = how many bytes a bitmap row consumes (320)
+.eqv ROW_SIZE 960
+
+# TILE_STRIDE = how many bytes of rows a bitmap tile consumes (8 * 320 = 10240)
+.eqv TILE_STRIDE 7680
+.eqv ARRAY_PIXELS_SIZE 230400
