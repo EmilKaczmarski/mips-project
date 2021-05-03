@@ -146,7 +146,7 @@ input_buffer: .space 64
 main:
 	li $a0, 1048576 # one mebibyte
 	li $v0, 9
-	syscall                               # allocate memory
+	syscall # allocate memory
 	
 	la $at, file_buffer
 	sw $v0, 0($at)	
@@ -154,7 +154,7 @@ main:
 	li $a1, 0
 	li $a2, 0
 	li $v0, 13
-	syscall                               # open file
+	syscall # open file
 
 	blt $v0, $zero, prompt_error
 
@@ -164,7 +164,7 @@ main:
 	la $a1, bitmap_header
 	li $a2, BITMAP_HEADER_SIZE
 	li $v0, 14
-	syscall                               # read file
+	syscall # read file
 
 	blt $v0, $a2, prompt_error
 
@@ -182,7 +182,7 @@ read_pixel_data:
 	lw $a1, 0($a1)
 	move $a2, $t0
 	li $v0, 14
-	syscall                               # read file
+	syscall # read file
 
 	blt $v0, $zero, prompt_error
 
@@ -200,32 +200,32 @@ main_pixel_array_offset:
 prompt_error:
 	la $a0, error_string
 	li $v0, 4
-	syscall                               # print string
+	syscall # print string
 
 	j main_program_end
 
 main_user_input:
 	la $a0, prompt_number
 	li $v0, 4
-	syscall                               # print string
+	syscall # print string
 	la $a0, input_buffer
 	li $a1, 32
 	li $v0, 8
-	syscall                               # read string
+	syscall # read string
 
 	la $a0, prompt_coordinate_x
 	li $v0, 4
-	syscall                               # print string
+	syscall # print string
 	li $v0, 5
-	syscall                               # read integer
+	syscall # read integer
 	la $a0, coordinate_x
 	sw $v0, 0($a0)
 
 	la $a0, prompt_coordinate_y
 	li $v0, 4
-	syscall                               # print string
+	syscall # print string
 	li $v0, 5
-	syscall                               # read integer
+	syscall # read integer
 	la $a0, coordinate_y
 	sw $v0, 0($a0)
 
@@ -277,7 +277,7 @@ main_write_file:
 	li $a1, 1
 	li $a2, 0
 	li $v0, 13
-	syscall                               # open file
+	syscall # open file
 	blt $v0, $zero, prompt_error
 
 	la $at, file_handle_output
@@ -286,7 +286,7 @@ main_write_file:
 	la $a1, bitmap_header
 	li $a2, BITMAP_HEADER_SIZE
 	li $v0, 15
-	syscall                               # write file
+	syscall # write file
 	blt $v0, $zero, prompt_error
 
 	la $a0, file_handle_output
@@ -296,7 +296,7 @@ main_write_file:
 	la $a2, data_size
 	lw $a2, 0($a2)
 	li $v0, 15
-	syscall                               # write file
+	syscall # write file
 	b main_program_end
 
 draw_tile: # $a0: pointer to tile to be printed, $a1: coordinate x, $a2: coordinate y, $a3: color
