@@ -123,8 +123,6 @@ bitmap_dot: # '.'
 .byte 0, 0, 0, 1, 1, 0, 0, 0
 .byte 0, 0, 0, 1, 1, 0, 0, 0
 
-.align 2
-
 array_digits:
 .word bitmap_digit0
 .word bitmap_digit1
@@ -174,10 +172,7 @@ prompt_coordinate_y:
 .asciiz "Type the Y coordinate: "
 
 error_string:
-.asciiz "Couldn't open file for reading!\n"
-
-line_break:
-.asciiz "\n"
+.asciiz "Something went wrong!\n"
 
 input_buffer:
 .space 64
@@ -186,22 +181,10 @@ input_buffer:
 .eqv FLAG_WRITE_CREATE 1
 .eqv FLAG_WRITE_APPEND 9
 
-.eqv BITMAP_SIGNATURE1 0x424D
-.eqv BITMAP_SIGNATURE2 0x4D42
-
 .eqv INPUT_LIMIT 32
 
-# color for painting the numbers on the bitmap
-.eqv PAINT_COLOR 0x00000000 # black
-
-#######
-# TEXT - PROGRAM CODE
-#######
 .text
 
-#######
-# main
-#######
 main:
 
 main_read_bitmap:
@@ -241,7 +224,6 @@ main_read_bitmap_correct_signature:
 	li $t1, BITMAP_HEADER_SIZE
 	subu $t0, $t0, $t1
 
-
 	# reads the remainder of the file
 
 	la $at, file_handle_input
@@ -262,32 +244,8 @@ main_read_bitmap_correct_signature:
 
 main_pixel_array_offset:
 
-	la $at, bitmap_header
-
-	# $t0 = count of colors in palette
-	move $t0, $zero
-	
-	lbu $t1, 10($at)
-	or $t0, $t0, $t1
-
-	lbu $t1, 11($at)
-	sll $t1, $t1, 8
-	or $t0, $t0, $t1
-
-	lbu $t1, 12($at)
-	sll $t1, $t1, 16
-	or $t0, $t0, $t1
-
-	lbu $t1, 13($at)
-	sll $t1, $t1, 24
-	or $t0, $t0, $t1
-
-	subiu $t0, $t0, BITMAP_HEADER_SIZE
-
 	la $at, file_buffer
-	lw $at, 0($at)
-
-	addu $t0, $t0, $at
+	lw $t0, 0($at)
 
 	la $at, pixel_array_pointer
 	sw $t0, 0($at)
@@ -304,8 +262,6 @@ prompt_error:
 
 main_user_input:
 
-	# asks the user for a floating-point number
-
 	la $a0, prompt_number
 	li $v0, 4
 	syscall                               # print string
@@ -314,8 +270,6 @@ main_user_input:
 	li $a1, INPUT_LIMIT
 	li $v0, 8
 	syscall                               # read string
-
-	# asks the user for the x coordinate for the origin point
 
 	la $a0, prompt_coordinate_x
 	li $v0, 4
@@ -326,8 +280,6 @@ main_user_input:
 
 	la $a0, coordinate_x
 	sw $v0, 0($a0)
-
-	# asks the user for the y coordinate for the origin point
 
 	la $a0, prompt_coordinate_y
 	li $v0, 4
@@ -347,36 +299,25 @@ main_draw_text_loop:
 
 	addiu $s0, $s0, 1
 
-	# if null character found, break loop
-
 	lbu $t0, 0($s0)
 	beq $t0, $zero, main_draw_text_end
-
-	# dot found, print it.
 
 	li $t1, '.'
 	beq $t0, $t1, main_draw_text_dot
 
-	# ignore characters after '9'
-
 	li $t1, '9'
 	bgt $t0, $t1, main_draw_text_loop
-
-	# ignore characters before '0'
 
 	li $t1, '0'
 	blt $t0, $t1 main_draw_text_loop
 
 main_draw_text_digit:
 
-	# $t0 = index in array_digits
-	subu $t0, $t0, $t1
+	subu $t0, $t0, $t1 # $t0 = index in array_digits
 
 	sll $t0, $t0, 2
 
-	# $a0 = pointer to bitmap tile
-
-	la $a0, array_digits
+	la $a0, array_digits # $a0 = pointer to bitmap tile
 	addu $a0, $a0, $t0
 	lw $a0, 0($a0)
 
@@ -385,8 +326,6 @@ main_draw_text_digit:
 
 	la $at, coordinate_y
 	lw $a2, 0($at)
-
-	li $a3, PAINT_COLOR
 	
 	jal draw_tile
 
@@ -403,8 +342,6 @@ main_draw_text_dot:
 
 	la $at, coordinate_y
 	lw $a2, 0($at)
-
-	li $a3, PAINT_COLOR
 	
 	jal draw_tile
 
