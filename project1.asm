@@ -150,7 +150,6 @@ main:
 	
 	la $at, file_buffer
 	sw $v0, 0($at)	
-
 	la $a0, file_name_input
 	li $a1, 0
 	li $a2, 0
@@ -161,7 +160,6 @@ main:
 
 	la $at, file_handle_input
 	sw $v0, 0($at)
-
 	move $a0, $v0
 	la $a1, bitmap_header
 	li $a2, BITMAP_HEADER_SIZE
@@ -180,12 +178,9 @@ read_pixel_data:
 
 	la $at, file_handle_input # reads the remainder of the file
 	lw $a0, 0($at)
-
 	la $a1, file_buffer
 	lw $a1, 0($a1)
-
 	move $a2, $t0
-
 	li $v0, 14
 	syscall                               # read file
 
@@ -197,7 +192,6 @@ read_pixel_data:
 main_pixel_array_offset:
 	la $at, file_buffer
 	lw $t0, 0($at)
-
 	la $at, pixel_array_pointer
 	sw $t0, 0($at)
 
@@ -214,7 +208,6 @@ main_user_input:
 	la $a0, prompt_number
 	li $v0, 4
 	syscall                               # print string
-
 	la $a0, input_buffer
 	li $a1, 32
 	li $v0, 8
@@ -223,20 +216,16 @@ main_user_input:
 	la $a0, prompt_coordinate_x
 	li $v0, 4
 	syscall                               # print string
-
 	li $v0, 5
 	syscall                               # read integer
-
 	la $a0, coordinate_x
 	sw $v0, 0($a0)
 
 	la $a0, prompt_coordinate_y
 	li $v0, 4
 	syscall                               # print string
-
 	li $v0, 5
 	syscall                               # read integer
-
 	la $a0, coordinate_y
 	sw $v0, 0($a0)
 
@@ -266,7 +255,6 @@ main_draw_text_digit:
 	lw $a1, 0($at)
 	la $at, coordinate_y
 	lw $a2, 0($at)
-	
 	jal draw_tile
 
 main_draw_text_dot:
@@ -309,7 +297,6 @@ main_write_file:
 	lw $a2, 0($a2)
 	li $v0, 15
 	syscall                               # write file
-
 	b main_program_end
 
 draw_tile: # $a0: pointer to tile to be printed, $a1: coordinate x, $a2: coordinate y, $a3: color
