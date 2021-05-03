@@ -282,7 +282,6 @@ main_draw_text_next_tile:
 	lw $t1, 0($t0)
 	addiu $t1, $t1, 16
 	sw $t1, 0($t0)
-
 	b main_draw_text_loop
 
 main_write_file:
@@ -347,7 +346,6 @@ draw_tile_black_row_pixel:
 	sb $a3, 0($t5)
 	sb $a3, 1($t5)
 	sb $a3, 2($t5)
-	sb $a3, 3($t5)
 
 draw_tile_row_loop_continue:
 	addiu $t0, $t0, 1
