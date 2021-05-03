@@ -194,32 +194,8 @@ chunk_bitmap_bits_per_pixel:
 chunk_bitmap_header_size:
 .asciiz "bitmap header size: "
 
-error_read_file:
+error_string:
 .asciiz "Couldn't open file for reading!\n"
-
-error_read_header:
-.asciiz "Couldn't read header from input file!\n"
-
-error_wrong_signature:
-.asciiz "This file doesn't have the proper signature!\n"
-
-error_wrong_size:
-.asciiz "The bitmap file isn't exactly of size 320x240!\n"
-
-error_unsupported_bits_per_pixel:
-.asciiz "This program only supports bitmaps that use 8-bits per pixel!\n"
-
-error_unsupported_header_size:
-.asciiz "This program expects the header size to be 40 bytes!\n"
-
-error_compression:
-.asciiz "Unsupported compression scheme!\n"
-
-error_big_file:
-.asciiz "This file exceeds the 1MiB limit!\n"
-
-error_write_file:
-.asciiz "Failed to write to file!\n"
 
 line_break:
 .asciiz "\n"
@@ -233,9 +209,6 @@ input_buffer:
 
 .eqv BITMAP_SIGNATURE1 0x424D
 .eqv BITMAP_SIGNATURE2 0x4D42
-
-# size for allocating buffer to read whole file
-.eqv ONE_MEBIBYTE 1048576
 
 .eqv INPUT_LIMIT 32
 
@@ -254,7 +227,7 @@ main:
 
 main_read_bitmap:
 
-	li $a0, ONE_MEBIBYTE
+	li $a0, 1048576 #ONE_MEBIBYTE
 	li $v0, 9
 	syscall                               # allocate memory
 	
@@ -267,7 +240,7 @@ main_read_bitmap:
 	li $v0, 13
 	syscall                               # open file
 
-	blt $v0, $zero, main_read_bitmap_failure1
+	blt $v0, $zero, prompt_error
 
 	la $at, file_handle_input
 	sw $v0, 0($at)
@@ -278,7 +251,7 @@ main_read_bitmap:
 	li $v0, 14
 	syscall                               # read file
 
-	blt $v0, $a2, main_read_bitmap_failure2
+	blt $v0, $a2, prompt_error
 
 	la $at, bitmap_header
 	lhu $t1, 0($at)
@@ -289,7 +262,7 @@ main_read_bitmap:
 	li $t0, BITMAP_SIGNATURE2
 	beq $t1, $t0, main_read_bitmap_correct_signature
 
-	b main_read_bitmap_failure3
+	b prompt_error
 
 main_read_bitmap_correct_signature:
 
@@ -297,7 +270,7 @@ main_read_bitmap_correct_signature:
 	lbu $t0, 30($at)
 
 	# expects compression method 0 (uncompressed)
-	bne $t0, $zero, main_read_bitmap_failure4
+	bne $t0, $zero, prompt_error
 
 	# $t0 = bitmap width, $t1 = bitmap height
 	move $t0, $zero
@@ -362,10 +335,10 @@ main_read_bitmap_correct_signature:
 	syscall                               # print string
 
 	li $t2, EXPECTED_BITMAP_WIDTH
-	bne $t0, $t2, main_read_bitmap_failure5
+	bne $t0, $t2, prompt_error
 
 	li $t2, EXPECTED_BITMAP_HEIGHT
-	bne $t1, $t2, main_read_bitmap_failure5
+	bne $t1, $t2, prompt_error
 
 	# $t0 = bitmap bits per pixel
 	move $t0, $zero
@@ -398,7 +371,7 @@ main_read_bitmap_correct_signature:
 	syscall                               # print string
 
 	li $t1, EXPECTED_BITMAP_BITS_PER_PIXEL
-	bne $t1, $t0, main_read_bitmap_failure6
+	bne $t1, $t0, prompt_error
 
 	# $t0 = bitmap DIB header size
 	move $t0, $zero
@@ -431,7 +404,7 @@ main_read_bitmap_correct_signature:
 	syscall                               # print string
 
 	li $t1, EXPECTED_BITMAP_HEADER_SIZE
-	bne $t1, $t0, main_read_bitmap_failure7
+	bne $t1, $t0, prompt_error
 
 	# $t0 = file size, reads little-endian number
 	move $t0, $zero
@@ -451,9 +424,9 @@ main_read_bitmap_correct_signature:
 	sll $t1, $t1, 24
 	or $t0, $t0, $t1
 
-	li $t1, ONE_MEBIBYTE
+	li $t1,  1048576 #ONE_MEBIBYTE
 
-	blt $t1, $t0, main_read_bitmap_failure8
+	blt $t1, $t0, prompt_error
 
 	li $t1, BITMAP_HEADER_SIZE
 	subu $t0, $t0, $t1
@@ -474,7 +447,7 @@ main_read_bitmap_correct_signature:
 	li $v0, 14
 	syscall                               # read file
 
-	blt $v0, $zero, main_read_bitmap_failure1
+	blt $v0, $zero, prompt_error
 
 	la $at, data_size
 	sw $v0, 0($at)
@@ -514,66 +487,10 @@ main_pixel_array_offset:
 
 	b main_user_input
 
-main_read_bitmap_failure1:
+prompt_error:
 
-	la $a0, error_read_file
+	la $a0, error_string
 	li $v0, 4
-	syscall                               # print string
-
-	j main_program_end
-
-main_read_bitmap_failure2:
-
-	la $a0, error_read_header
-	li $v0, 4
-	syscall                               # print string
-
-	j main_program_end
-
-main_read_bitmap_failure3:
-
-	la $a0, error_wrong_signature
-	li $v0, 4
-	syscall                               # print string
-
-	j main_program_end
-
-main_read_bitmap_failure4:
-
-	la $a0, error_compression
-	la $v0, 4
-	syscall                               # print string
-
-	j main_program_end
-
-main_read_bitmap_failure5:
-
-	la $a0, error_wrong_size
-	la $v0, 5
-	syscall                               # print string
-
-	j main_program_end
-
-main_read_bitmap_failure6:
-
-	la $a0, error_unsupported_bits_per_pixel
-	la $v0, 4
-	syscall                               # print string
-
-	j main_program_end
-
-main_read_bitmap_failure7:
-
-	la $a0, error_unsupported_header_size
-	la $v0, 4
-	syscall                               # print string
-
-	j main_program_end
-
-main_read_bitmap_failure8:
-
-	la $a0, error_big_file
-	la $v0, 4
 	syscall                               # print string
 
 	j main_program_end
@@ -706,7 +623,7 @@ main_write_file:
 	li $v0, 13
 	syscall                               # open file
 
-	blt $v0, $zero, main_write_bitmap_failure1
+	blt $v0, $zero, prompt_error
 
 	la $at, file_handle_output
 	sw $v0, 0($at)
@@ -720,7 +637,7 @@ main_write_file:
 	li $v0, 15
 	syscall                               # write file
 
-	blt $v0, $zero, main_write_bitmap_failure1
+	blt $v0, $zero, prompt_error
 
 	la $a0, file_handle_output
 	lw $a0, 0($a0)
@@ -735,15 +652,6 @@ main_write_file:
 	syscall                               # write file
 
 	b main_program_end
-
-main_write_bitmap_failure1:
-
-	la $a0, error_write_file
-	la $v0, 4
-	syscall                               # print string
-
-	j main_program_end
-
 
 main_program_end:
 
