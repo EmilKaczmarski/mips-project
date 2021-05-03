@@ -1,6 +1,5 @@
 .data
 
-# the bitmap file format has a header that is exactly 54 bytes long.
 .eqv BITMAP_HEADER_SIZE 54
 
 .eqv EXPECTED_BITMAP_WIDTH 320
@@ -154,7 +153,7 @@ file_buffer:
 .word 0
 
 data_size:
-.word 0
+.word 268501812
 
 pixel_array_pointer:
 .word 0
@@ -173,18 +172,6 @@ prompt_coordinate_x:
 
 prompt_coordinate_y:
 .asciiz "Type the Y coordinate: "
-
-chunk_bitmap_width:
-.asciiz "bitmap width: "
-
-chunk_bitmap_height:
-.asciiz "bitmap height: "
-
-chunk_bitmap_bits_per_pixel:
-.asciiz "bitmap bits per pixel: "
-
-chunk_bitmap_header_size:
-.asciiz "bitmap header size: "
 
 error_string:
 .asciiz "Couldn't open file for reading!\n"
@@ -249,34 +236,11 @@ main_read_bitmap:
 	lhu $t1, 0($at)
 
 main_read_bitmap_correct_signature:
-
-	# $t0 = file size, reads little-endian number
-	move $t0, $zero
-
-	lbu $t1, 2($at)
-	or $t0, $t0, $t1
-
-	lbu $t1, 3($at)
-	sll $t1, $t1, 8
-	or $t0, $t0, $t1
-
-	lbu $t1, 4($at)
-	sll $t1, $t1, 16
-	or $t0, $t0, $t1
-
-	lbu $t1, 5($at)
-	sll $t1, $t1, 24
-	or $t0, $t0, $t1
-
-	li $t1,  1048576 #ONE_MEBIBYTE
-
-	blt $t1, $t0, prompt_error
-
+	
+	la $t0, data_size
 	li $t1, BITMAP_HEADER_SIZE
 	subu $t0, $t0, $t1
 
-	la $at, data_size
-	sw $t0, 0($at)
 
 	# reads the remainder of the file
 
@@ -296,7 +260,6 @@ main_read_bitmap_correct_signature:
 	la $at, data_size
 	sw $v0, 0($at)
 
-	# calculates the pixel array offset in file_buffer
 main_pixel_array_offset:
 
 	la $at, bitmap_header
