@@ -1,17 +1,7 @@
 .data
 
 .eqv BITMAP_HEADER_SIZE 54
-
-.eqv EXPECTED_BITMAP_WIDTH 320
-.eqv EXPECTED_BITMAP_HEIGHT 240
-.eqv EXPECTED_BITMAP_BITS_PER_PIXEL 24
-.eqv EXPECTED_BITMAP_HEADER_SIZE 40 # DIB header
-
-.eqv EXPECTED_PALETTE_SIZE 1024
-
-.align 1
-bitmap_header:
-.space BITMAP_HEADER_SIZE
+bitmap_header: .space BITMAP_HEADER_SIZE
 
 bitmap_digit0: # '0'
 .byte 1, 1, 1, 1, 1, 1, 0, 0
@@ -135,59 +125,24 @@ array_digits:
 .word bitmap_digit8
 .word bitmap_digit9
 
-coordinate_x:
-.word 0
-
-coordinate_y:
-.word 0
-
-file_handle_input:
-.word 0
-
-file_handle_output:
-.word 0
-
-file_buffer:
-.word 0
-
-data_size:
-.word 268501812
-
-pixel_array_pointer:
-.word 0
-
-file_name_input:
-.asciiz "source.bmp"
-
-file_name_output:
-.asciiz "destination.bmp"
-
-prompt_number:
-.asciiz "Type the floating point number: "
-
-prompt_coordinate_x:
-.asciiz "Type the X coordinate: "
-
-prompt_coordinate_y:
-.asciiz "Type the Y coordinate: "
-
-error_string:
-.asciiz "Something went wrong!\n"
-
-input_buffer:
-.space 64
-
-.eqv FLAG_READ         0
-.eqv FLAG_WRITE_CREATE 1
-.eqv FLAG_WRITE_APPEND 9
-
-.eqv INPUT_LIMIT 32
+coordinate_x: .word 0
+coordinate_y: .word 0
+file_handle_input: .word 0
+file_handle_output: .word 0
+file_buffer: .word 0
+data_size: .word 268501812
+pixel_array_pointer: .word 0
+file_name_input: .asciiz "source.bmp"
+file_name_output: .asciiz "destination.bmp"
+prompt_number: .asciiz "Type the floating point number: "
+prompt_coordinate_x: .asciiz "Type the X coordinate: "
+prompt_coordinate_y: .asciiz "Type the Y coordinate: "
+error_string: .asciiz "Something went wrong!\n"
+input_buffer: .space 64
 
 .text
 
 main:
-
-main_read_bitmap:
 
 	li $a0, 1048576 #ONE_MEBIBYTE
 	li $v0, 9
@@ -197,7 +152,7 @@ main_read_bitmap:
 	sw $v0, 0($at)	
 
 	la $a0, file_name_input
-	li $a1, FLAG_READ
+	li $a1, 0
 	li $a2, 0
 	li $v0, 13
 	syscall                               # open file
@@ -267,7 +222,7 @@ main_user_input:
 	syscall                               # print string
 
 	la $a0, input_buffer
-	li $a1, INPUT_LIMIT
+	li $a1, 32
 	li $v0, 8
 	syscall                               # read string
 
@@ -291,8 +246,7 @@ main_user_input:
 	la $a0, coordinate_y
 	sw $v0, 0($a0)
 
-	# loop for drawing the input floating-point number
-	la $s0, input_buffer
+	la $s0, input_buffer # loop for drawing the input floating-point number
 	addiu $s0, $s0, -1
 
 main_draw_text_loop:
@@ -362,7 +316,7 @@ main_draw_text_end:
 main_write_file:
 
 	la $a0, file_name_output
-	li $a1, FLAG_WRITE_CREATE
+	li $a1, 1
 	li $a2, 0
 	li $v0, 13
 	syscall                               # open file
