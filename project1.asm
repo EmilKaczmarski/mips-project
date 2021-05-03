@@ -4,14 +4,14 @@
 bitmap_header: .space BITMAP_HEADER_SIZE
 
 bitmap_digit0: # '0'
-.byte 1, 1, 1, 1, 1, 1, 0, 0
-.byte 1, 0, 0, 0, 0, 0, 1, 0
-.byte 1, 0, 0, 0, 0, 0, 1, 0
-.byte 1, 0, 0, 0, 0, 0, 1, 0
-.byte 1, 0, 0, 0, 0, 0, 1, 0
-.byte 1, 0, 0, 0, 0, 0, 1, 0
-.byte 1, 0, 0, 0, 0, 0, 1, 0
-.byte 0, 1, 1, 1, 1, 1, 0, 0
+.byte 0, 1, 1, 1, 1, 1, 1, 0
+.byte 0, 1, 0, 0, 0, 0, 1, 0
+.byte 0, 1, 0, 0, 0, 0, 1, 0
+.byte 0, 1, 0, 0, 0, 0, 1, 0
+.byte 0, 1, 0, 0, 0, 0, 1, 0
+.byte 0, 1, 0, 0, 0, 0, 1, 0
+.byte 0, 1, 0, 0, 0, 0, 1, 0
+.byte 0, 1, 1, 1, 1, 1, 1, 0
 
 bitmap_digit1: # '1'
 .byte 0, 0, 0, 1, 0, 0, 0, 0
@@ -21,46 +21,46 @@ bitmap_digit1: # '1'
 .byte 0, 0, 0, 1, 0, 0, 0, 0
 .byte 0, 0, 0, 1, 0, 0, 0, 0
 .byte 0, 0, 0, 1, 0, 0, 0, 0
-.byte 0, 0, 1, 1, 1, 1, 0, 0
+.byte 0, 0, 1, 1, 1, 0, 0, 0
 
 bitmap_digit2: # '2'
 .byte 0, 1, 1, 1, 1, 1, 0, 0
-.byte 1, 0, 0, 0, 0, 0, 0, 0
-.byte 1, 0, 0, 0, 0, 0, 0, 0
-.byte 1, 0, 0, 0, 0, 0, 0, 0
+.byte 0, 1, 0, 0, 0, 0, 0, 0
+.byte 0, 1, 0, 0, 0, 0, 0, 0
+.byte 0, 1, 0, 0, 0, 0, 0, 0
 .byte 0, 1, 1, 1, 0, 0, 0, 0
 .byte 0, 0, 0, 0, 1, 1, 0, 0
 .byte 0, 0, 0, 0, 0, 0, 1, 0
-.byte 1, 1, 1, 1, 1, 1, 1, 0
+.byte 0, 1, 1, 1, 1, 1, 1, 0
 
 bitmap_digit3: # '3'
-.byte 1, 1, 1, 1, 1, 1, 0, 0
-.byte 1, 0, 0, 0, 0, 0, 0, 0
-.byte 1, 0, 0, 0, 0, 0, 0, 0
-.byte 1, 1, 1, 1, 1, 0, 0, 0
-.byte 1, 0, 0, 0, 0, 0, 0, 0
-.byte 1, 0, 0, 0, 0, 0, 0, 0
-.byte 1, 0, 0, 0, 0, 0, 1, 0
-.byte 1, 1, 1, 1, 1, 1, 0, 0
+.byte 0, 1, 1, 1, 1, 1, 1, 0
+.byte 0, 1, 0, 0, 0, 0, 0, 0
+.byte 0, 1, 0, 0, 0, 0, 0, 0
+.byte 0, 1, 1, 1, 1, 1, 0, 0
+.byte 0, 1, 0, 0, 0, 0, 0, 0
+.byte 0, 1, 0, 0, 0, 0, 0, 0
+.byte 0, 1, 0, 0, 0, 0, 0, 0
+.byte 0, 1, 1, 1, 1, 1, 1, 0
 
 bitmap_digit4: # '4'
 .byte 0, 1, 1, 0, 0, 0, 0, 0
 .byte 0, 1, 0, 1, 0, 0, 0, 0
 .byte 0, 1, 0, 0, 1, 0, 0, 0
 .byte 0, 1, 0, 0, 0, 1, 0, 0
-.byte 1, 1, 1, 1, 1, 1, 1, 0
-.byte 0, 1, 0, 0, 0, 0, 0, 0
+.byte 1, 1, 0, 0, 0, 0, 1, 0
+.byte 0, 1, 1, 1, 1, 1, 1, 0
 .byte 0, 1, 0, 0, 0, 0, 0, 0
 .byte 0, 1, 0, 0, 0, 0, 0, 0
 
 bitmap_digit5: # '5'
-.byte 1, 1, 1, 1, 1, 1, 1, 0
+.byte 0, 1, 1, 1, 1, 1, 1, 0
 .byte 0, 0, 0, 0, 0, 0, 1, 0
 .byte 0, 0, 0, 0, 0, 0, 1, 0
 .byte 0, 1, 1, 1, 1, 1, 1, 0
-.byte 1, 0, 0, 0, 0, 0, 0, 0
-.byte 1, 0, 0, 0, 0, 0, 0, 0
-.byte 1, 0, 0, 0, 0, 0, 1, 0
+.byte 0, 1, 0, 0, 0, 0, 0, 0
+.byte 0, 1, 0, 0, 0, 0, 0, 0
+.byte 0, 1, 0, 0, 0, 0, 1, 0
 .byte 0, 1, 1, 1, 1, 1, 0, 0
 
 bitmap_digit6: # '6'
@@ -69,39 +69,39 @@ bitmap_digit6: # '6'
 .byte 0, 0, 0, 0, 0, 0, 1, 0
 .byte 0, 0, 0, 0, 0, 0, 1, 0
 .byte 0, 1, 1, 1, 1, 1, 1, 0
-.byte 1, 0, 0, 0, 0, 0, 1, 0
-.byte 1, 0, 0, 0, 0, 0, 1, 0
-.byte 0, 1, 1, 1, 1, 1, 0, 0
+.byte 0, 1, 0, 0, 0, 0, 1, 0
+.byte 0, 1, 0, 0, 0, 0, 1, 0
+.byte 0, 1, 1, 1, 1, 1, 1, 0
 
 bitmap_digit7: # '7'
-.byte 1, 1, 1, 1, 1, 1, 1, 0
-.byte 1, 0, 0, 0, 0, 0, 1, 0
-.byte 1, 0, 0, 0, 0, 0, 0, 0
+.byte 0, 1, 1, 1, 1, 1, 1, 0
+.byte 0, 1, 0, 0, 0, 0, 1, 0
 .byte 0, 1, 0, 0, 0, 0, 0, 0
 .byte 0, 0, 1, 0, 0, 0, 0, 0
 .byte 0, 0, 0, 1, 0, 0, 0, 0
-.byte 0, 0, 0, 1, 0, 0, 0, 0
-.byte 0, 0, 0, 1, 0, 0, 0, 0
+.byte 0, 0, 0, 0, 1, 0, 0, 0
+.byte 0, 0, 0, 0, 1, 0, 0, 0
+.byte 0, 0, 0, 0, 1, 0, 0, 0
 
 bitmap_digit8: # '8'
-.byte 0, 1, 1, 1, 1, 1, 0, 0
-.byte 1, 0, 0, 0, 0, 0, 1, 0
-.byte 1, 0, 0, 0, 0, 0, 1, 0
-.byte 1, 0, 0, 0, 0, 0, 1, 0
-.byte 0, 1, 1, 1, 1, 1, 0, 0
-.byte 1, 0, 0, 0, 0, 0, 1, 0
-.byte 1, 0, 0, 0, 0, 0, 1, 0
-.byte 0, 1, 1, 1, 1, 1, 0, 0
+.byte 0, 1, 1, 1, 1, 1, 1, 0
+.byte 0, 1, 0, 0, 0, 0, 1, 0
+.byte 0, 1, 0, 0, 0, 0, 1, 0
+.byte 0, 1, 0, 0, 0, 0, 1, 0
+.byte 0, 1, 1, 1, 1, 1, 1, 0
+.byte 0, 1, 0, 0, 0, 0, 1, 0
+.byte 0, 1, 0, 0, 0, 0, 1, 0
+.byte 0, 1, 1, 1, 1, 1, 1, 0
 
 bitmap_digit9: # '9'
-.byte 0, 1, 1, 1, 1, 1, 0, 0
-.byte 1, 0, 0, 0, 0, 0, 1, 0
-.byte 1, 0, 0, 0, 0, 0, 1, 0
-.byte 1, 0, 0, 0, 0, 0, 1, 0
-.byte 1, 1, 1, 1, 1, 1, 1, 0
-.byte 1, 0, 0, 0, 0, 0, 0, 0
-.byte 1, 0, 0, 0, 0, 0, 0, 0
-.byte 0, 1, 1, 1, 1, 1, 0, 0
+.byte 0, 1, 1, 1, 1, 1, 1, 0
+.byte 0, 1, 0, 0, 0, 0, 1, 0
+.byte 0, 1, 0, 0, 0, 0, 1, 0
+.byte 0, 1, 0, 0, 0, 0, 1, 0
+.byte 0, 1, 1, 1, 1, 1, 1, 0
+.byte 0, 1, 0, 0, 0, 0, 0, 0
+.byte 0, 1, 0, 0, 0, 0, 0, 0
+.byte 0, 1, 1, 1, 1, 1, 1, 0
 
 bitmap_dot: # '.'
 .byte 0, 0, 0, 0, 0, 0, 0, 0
@@ -144,7 +144,7 @@ input_buffer: .space 64
 
 main:
 
-	li $a0, 1048576 #ONE_MEBIBYTE
+	li $a0, 1048576 # one mebibyte
 	li $v0, 9
 	syscall                               # allocate memory
 	
@@ -173,7 +173,7 @@ main:
 	la $at, bitmap_header
 	lhu $t1, 0($at)
 
-main_read_bitmap_correct_signature:
+read_pixel_data:
 	
 	la $t0, data_size
 	li $t1, BITMAP_HEADER_SIZE
@@ -254,7 +254,7 @@ main_draw_text_loop:
 	addiu $s0, $s0, 1
 
 	lbu $t0, 0($s0)
-	beq $t0, $zero, main_draw_text_end
+	beq $t0, $zero, main_write_file
 
 	li $t1, '.'
 	beq $t0, $t1, main_draw_text_dot
@@ -287,8 +287,6 @@ main_draw_text_digit:
 
 main_draw_text_dot:
 
-	# draw dot
-
 	la $a0, bitmap_dot
 
 	la $at, coordinate_x
@@ -300,18 +298,12 @@ main_draw_text_dot:
 	jal draw_tile
 
 main_draw_text_next_tile:
-
-	# increases x coordinate of origin point by eight
-
 	la $t0, coordinate_x
 	lw $t1, 0($t0)
 	addiu $t1, $t1, 8
 	sw $t1, 0($t0)
 
 	b main_draw_text_loop
-
-main_draw_text_end:
-
 
 main_write_file:
 
@@ -351,51 +343,17 @@ main_write_file:
 
 	b main_program_end
 
-main_program_end:
-
-	# end program
-
-	li $v0, 10
-	syscall
-
-	# dead end loop, if syscall failed to end program
-
-main_dead_end:
-	b main_dead_end
-
-# TILE_SIZE = how many bytes a full eight-by-eight tile has (8 * 8 = 64)
-.eqv TILE_SIZE 192
-
-# TILE_ROW_SIZE = how many bytes a row of an eight-by-eight tile has (8)
-.eqv TILE_ROW_SIZE 8
-
-# ROW_SIZE = how many bytes a bitmap row consumes (320)
 .eqv ROW_SIZE 960
-
-# TILE_STRIDE = how many bytes of rows a bitmap tile consumes (8 * 320 = 10240)
-.eqv TILE_STRIDE 7680
-
-.eqv ARRAY_PIXELS_SIZE 230400
-
-#######
-# draw_tile:
-# 
-# ARGUMENTS:
-# $a0: pointer to tile to be printed
-# $a1: coordinate x
-# $a2: coordinate y
-# $a3: color
-########
+# $a0: pointer to tile to be printed, $a1: coordinate x, $a2: coordinate y, $a3: color
 draw_tile:
 	# $t4 = pointer to end of pixels array
 	la $at, pixel_array_pointer
 	lw $t0, 0($at)
 
-	li $t4, ARRAY_PIXELS_SIZE
+	li $t4, 230400 # array pixel size
 	addu $t4, $t4, $t0
 
-	# $a2 = $a2 * ROW_SIZE
-	li $at, ROW_SIZE
+	li $at, ROW_SIZE # $a2 = $a2 * ROW_SIZE
 	multu $a2, $at
 	mflo $a2
 
@@ -405,7 +363,7 @@ draw_tile:
 	addu $t0, $t0, $a2
 
 	# $t1 = limit address, marks end of bitmap
-	li $at, TILE_STRIDE
+	li $at, 7680 # tile stride (24 * 320)
 	addu $t1, $t0, $at
 
 draw_tile_loop:
@@ -416,8 +374,6 @@ draw_tile_loop:
 	li $t3, 8 # pixels in a row
 
 draw_tile_row_loop:
-
-	# all pixels for this row have been drawn, move to the next
 	beq $t2, $t3, draw_tile_row_end
 
 	lbu $at, 0($a0)
@@ -446,17 +402,19 @@ draw_tile_row_loop_continue:
 	b draw_tile_row_loop
 
 draw_tile_row_end:
-
-	# moves pointer to the next row
-	li $at, ROW_SIZE
+	
+	li $at, ROW_SIZE # moves pointer to the next row
 	addu $t0, $t0, $at
 
 	# moves pointer to start of tile row, at the left
-	li $at, TILE_ROW_SIZE
+	li $at, 8 # tile row size
 	subu $t0, $t0, $at
 
 	b draw_tile_loop
 
 draw_tile_end:
-
 	jr $ra
+
+main_program_end:
+	li $v0, 10
+	syscall
