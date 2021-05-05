@@ -1,6 +1,6 @@
 #######
 # THIS PROGRAM ASSUMES THE BITMAP FILE IS EXACTLY 320 PIXELS WIDE AND 240 PIXELS TALL
-# IF THE BITMAP FILE DOES NOT MATCH THAT SIZE EXACTLY, THE OUTPUT IS UNDEFINED
+# IF THE BITMAP FILE DOES NOT MATCH THAT SIZE EXACTLY, THEN PROGRAM FAILS
 #
 
 #######
@@ -13,14 +13,25 @@
 
 .eqv EXPECTED_BITMAP_WIDTH 320
 .eqv EXPECTED_BITMAP_HEIGHT 240
-.eqv EXPECTED_BITMAP_BITS_PER_PIXEL 24
-.eqv EXPECTED_BITMAP_HEADER_SIZE 40 # DIB header
 
-.eqv EXPECTED_PALETTE_SIZE 1024
+# TILE_ROW_SIZE = how many bytes a row of an eight-by-eight tile has (3 * 8)
+.eqv TILE_ROW_SIZE 24
 
-.align 1
-bitmap_header:
-.space BITMAP_HEADER_SIZE
+# ROW_SIZE = how many bytes a bitmap row consumes (320 * 3)
+.eqv ROW_SIZE 960
+
+# TILE_STRIDE = how many bytes of rows a bitmap tile consumes (8* 3 * 320 = 7680)
+.eqv TILE_STRIDE 7680
+.eqv ARRAY_PIXELS_SIZE 230400
+
+# size for allocating buffer to read whole file
+.eqv ONE_MEBIBYTE 1048576
+.eqv INPUT_LIMIT 32
+
+# color for painting the numbers on the bitmap
+.eqv PAINT_COLOR 0x00000000 # black
+
+bitmap_header: .space BITMAP_HEADER_SIZE
 
 bitmap_digit0: # '0'
 .byte 0, 0, 0, 0, 0, 0, 0, 0
@@ -145,61 +156,23 @@ array_digits:
 .word bitmap_digit9
 
 coordinate_x: .word 0
-
 coordinate_y: .word 0
-
 file_handle_input: .word 0
-
 file_handle_output: .word 0
-
 file_buffer: .word 0
-
 data_size: .word 0
-
-color_index: .word 0
-
 pixel_array_pointer: .word 0
-
 file_name_input: .asciiz "source.bmp"
-
 file_name_output: .asciiz "destination.bmp"
-
 prompt_number: .asciiz "Type the floating point number: "
-
 prompt_coordinate_x: .asciiz "Type the X coordinate: "
-
 prompt_coordinate_y: .asciiz "Type the Y coordinate: "
-
 chunk_bitmap_width: .asciiz "bitmap width: "
-
 chunk_bitmap_height: .asciiz "bitmap height: "
-
-chunk_bitmap_bits_per_pixel: .asciiz "bitmap bits per pixel: "
-
-chunk_bitmap_header_size: .asciiz "bitmap header size: "
-
 error_string: .asciiz "Couldn't open file for reading!\n"
+line_break: .asciiz "\n"
 
-line_break:
-.asciiz "\n"
-
-input_buffer:
-.space 64
-
-.eqv FLAG_READ         0
-.eqv FLAG_WRITE_CREATE 1
-.eqv FLAG_WRITE_APPEND 9
-
-.eqv BITMAP_SIGNATURE1 0x424D
-.eqv BITMAP_SIGNATURE2 0x4D42
-
-# size for allocating buffer to read whole file
-.eqv ONE_MEBIBYTE 1048576
-
-.eqv INPUT_LIMIT 32
-
-# color for painting the numbers on the bitmap
-.eqv PAINT_COLOR 0x00000000 # black
+input_buffer: .space 64
 
 #######
 # TEXT - PROGRAM CODE
@@ -221,7 +194,7 @@ main_read_bitmap:
 	sw $v0, 0($at)	
 
 	la $a0, file_name_input
-	li $a1, FLAG_READ
+	li $a1, 0
 	li $a2, 0
 	li $v0, 13
 	syscall                               # open file
@@ -241,14 +214,6 @@ main_read_bitmap:
 
 	la $at, bitmap_header
 	lhu $t1, 0($at)
-
-	li $t0, BITMAP_SIGNATURE1
-	beq $t1, $t0, main_read_bitmap_correct_signature
-
-	li $t0, BITMAP_SIGNATURE2
-	beq $t1, $t0, main_read_bitmap_correct_signature
-
-	b main_error
 
 main_read_bitmap_correct_signature:
 
@@ -325,100 +290,12 @@ main_read_bitmap_correct_signature:
 
 	li $t2, EXPECTED_BITMAP_HEIGHT
 	bne $t1, $t2, main_error
-
-	# $t0 = bitmap bits per pixel
-	move $t0, $zero
-
-	lbu $t1, 28($at)
-	or $t0, $t0, $t1
-
-	lbu $t1, 29($at)
-	sll $t1, $t1, 8
-	or $t0, $t0, $t1
-
-	lbu $t1, 30($at)
-	sll $t1, $t1, 16
-	or $t0, $t0, $t1
-
-	lbu $t1, 31($at)
-	sll $t1, $t1, 24
-	or $t0, $t0, $t1
-
-	la $a0, chunk_bitmap_bits_per_pixel
-	li $v0, 4
-	syscall                               # print string
-
-	move $a0, $t0
-	li $v0, 1
-	syscall                               # print integer
-
-	la $a0, line_break
-	li $v0, 4
-	syscall                               # print string
-
-	li $t1, EXPECTED_BITMAP_BITS_PER_PIXEL
-	bne $t1, $t0, main_error
-
-	# $t0 = bitmap DIB header size
-	move $t0, $zero
-
-	lbu $t1, 14($at)
-	or $t0, $t0, $t1
-
-	lbu $t1, 15($at)
-	sll $t1, $t1, 8
-	or $t0, $t0, $t1
-
-	lbu $t1, 16($at)
-	sll $t1, $t1, 16
-	or $t0, $t0, $t1
-
-	lbu $t1, 17($at)
-	sll $t1, $t1, 24
-	or $t0, $t0, $t1
-
-	la $a0, chunk_bitmap_header_size
-	li $v0, 4
-	syscall                               # print string
-
-	move $a0, $t0
-	li $v0, 1
-	syscall                               # print integer
-
-	la $a0, line_break
-	li $v0, 4
-	syscall                               # print string
-
-	li $t1, EXPECTED_BITMAP_HEADER_SIZE
-	bne $t1, $t0, main_error
-
+	
 	# $t0 = file size, reads little-endian number
-	move $t0, $zero
 
-	lbu $t1, 2($at)
-	or $t0, $t0, $t1
-
-	lbu $t1, 3($at)
-	sll $t1, $t1, 8
-	or $t0, $t0, $t1
-
-	lbu $t1, 4($at)
-	sll $t1, $t1, 16
-	or $t0, $t0, $t1
-
-	lbu $t1, 5($at)
-	sll $t1, $t1, 24
-	or $t0, $t0, $t1
-
-	li $t1, ONE_MEBIBYTE
-
-	blt $t1, $t0, main_error
-
+	la $t0, data_size
 	li $t1, BITMAP_HEADER_SIZE
 	subu $t0, $t0, $t1
-
-	la $at, data_size
-	sw $t0, 0($at)
 
 	# reads the remainder of the file
 
@@ -438,55 +315,7 @@ main_read_bitmap_correct_signature:
 	la $at, data_size
 	sw $v0, 0($at)
 
-main_add_color:
 
-	la $at, bitmap_header
-
-	# $t0 = count of colors in palette
-	move $t0, $zero
-	
-	lbu $t1, 46($at)
-	or $t0, $t0, $t1
-
-	lbu $t1, 47($at)
-	sll $t1, $t1, 8
-	or $t0, $t0, $t1
-
-	lbu $t1, 48($at)
-	sll $t1, $t1, 16
-	or $t0, $t0, $t1
-
-	lbu $t1, 49($at)
-	sll $t1, $t1, 24
-	or $t0, $t0, $t1
-
-	addiu $t0, $t0, -1
-
-	# steals last color of palette for our use
-	la $at, file_buffer
-	lw $at, 0($at)
-
-	sll $t1, $t0, 2
-	addu $at, $at, $t1
-
-	li $t2, PAINT_COLOR
-	
-	sb $t2, 0($at)
-	
-	srl $t2, $t2, 8
-	sb $t2, 1($at)
-
-	srl $t2, $t2, 8
-	sb $t2, 2($at)
-
-	srl $t2, $t2, 8
-	sb $t2, 3($at)
-
-	# stores the palette index of the newer color
-	la $at, color_index
-	sw $t0, 0($at)
-
-	# calculates the pixel array offset in file_buffer
 main_pixel_array_offset:
 
 	la $at, bitmap_header
@@ -638,7 +467,7 @@ main_draw_text_next_tile:
 main_write_file:
 
 	la $a0, file_name_output
-	li $a1, FLAG_WRITE_CREATE
+	li $a1, 1
 	li $a2, 0
 	li $v0, 13
 	syscall                               # open file
@@ -675,27 +504,8 @@ main_write_file:
 
 
 main_program_end:
-
-	# end program
-
 	li $v0, 10
 	syscall
-
-	# dead end loop, if syscall failed to end program
-
-main_dead_end:
-	b main_dead_end
-
-# TILE_ROW_SIZE = how many bytes a row of an eight-by-eight tile has (8)
-.eqv TILE_ROW_SIZE 24
-
-# ROW_SIZE = how many bytes a bitmap row consumes (320)
-.eqv ROW_SIZE 960
-
-# TILE_STRIDE = how many bytes of rows a bitmap tile consumes (24 * 320 = 7680)
-.eqv TILE_STRIDE 7680
-
-.eqv ARRAY_PIXELS_SIZE 230400
 
 #######
 # draw_tile:
@@ -704,12 +514,8 @@ main_dead_end:
 # $a0: pointer to tile to be printed
 # $a1: coordinate x
 # $a2: coordinate y
-# $a3: color
 ########
 draw_tile:
-
-	la $at, color_index
-	lw $a3, ($at)
 
 	# $t4 = pointer to end of pixels array
 	la $at, pixel_array_pointer
