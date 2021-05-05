@@ -34,12 +34,12 @@ bitmap_digit0: # '0'
 
 bitmap_digit1: # '1'
 .byte 0, 0, 0, 0, 0, 0, 0, 0
-.byte 0, 0, 0, 1, 0, 0, 0, 0
 .byte 0, 0, 0, 1, 1, 0, 0, 0
-.byte 0, 0, 0, 1, 0, 0, 0, 0
-.byte 0, 0, 0, 1, 0, 0, 0, 0
-.byte 0, 0, 0, 1, 0, 0, 0, 0
-.byte 0, 0, 0, 1, 0, 0, 0, 0
+.byte 0, 0, 0, 1, 1, 0, 0, 0
+.byte 0, 0, 0, 1, 1, 0, 0, 0
+.byte 0, 0, 0, 1, 1, 0, 0, 0
+.byte 0, 0, 0, 1, 1, 0, 0, 0
+.byte 0, 0, 0, 1, 1, 0, 0, 0
 .byte 0, 1, 1, 1, 1, 1, 1, 1
 
 bitmap_digit2: # '2'
@@ -813,7 +813,7 @@ main_dead_end:
 # ROW_SIZE = how many bytes a bitmap row consumes (320)
 .eqv ROW_SIZE 960
 
-# TILE_STRIDE = how many bytes of rows a bitmap tile consumes (8 * 320 = 10240)
+# TILE_STRIDE = how many bytes of rows a bitmap tile consumes (24 * 320 = 7680)
 .eqv TILE_STRIDE 7680
 
 .eqv ARRAY_PIXELS_SIZE 230400
@@ -830,15 +830,15 @@ main_dead_end:
 draw_tile:
 
 	la $at, color_index
-	lw $a3, 0($at)
+	lw $a3, ($at)
 
 	# $t4 = pointer to end of pixels array
 	la $at, pixel_array_pointer
-	lw $t0, 0($at)
+	lw $t0, ($at)
 
 	li $t4, ARRAY_PIXELS_SIZE
 	addu $t4, $t4, $t0
-
+	subu $t4, $t4, 1
 	# $a2 = $a2 * ROW_SIZE
 	li $at, ROW_SIZE
 	multu $a2, $at
