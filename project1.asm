@@ -215,7 +215,13 @@ main_read_bitmap:
 	la $at, bitmap_header
 	lhu $t1, 0($at)
 
-main_read_bitmap_correct_signature:
+check_compression_and_size:
+	
+	#######
+	# checks whether:
+	# -> compression method == 0
+	# -> width and height are equal to expected
+	#######
 
 	# $t0 = compression method
 	lbu $t0, 30($at)
@@ -298,6 +304,7 @@ main_read_bitmap_correct_signature:
 	subu $t0, $t0, $t1
 
 	# reads the remainder of the file
+read_file_remainder:
 
 	la $at, file_handle_input
 	lw $a0, 0($at)
@@ -367,6 +374,8 @@ main_user_input:
 	li $v0, 8
 	syscall                               # read string
 
+	# asks the user for the x coordinate
+
 	la $a0, prompt_coordinate_x
 	li $v0, 4
 	syscall                               # print string
@@ -377,7 +386,7 @@ main_user_input:
 	la $a0, coordinate_x
 	sw $v0, 0($a0)
 
-	# asks the user for the y coordinate for the origin point
+	# asks the user for the y coordinate
 
 	la $a0, prompt_coordinate_y
 	li $v0, 4
@@ -455,7 +464,7 @@ main_draw_text_dot:
 
 main_draw_text_next_tile:
 
-	# increases x coordinate of origin point by eight
+	# increases x coordinate of origin point by 24
 
 	la $t0, coordinate_x
 	lw $t1, 0($t0)
