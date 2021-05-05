@@ -132,8 +132,6 @@ bitmap_dot: # '.'
 .byte 0, 0, 0, 0, 0, 1, 1, 0
 .byte 0, 0, 0, 0, 0, 1, 1, 0
 
-.align 2
-
 array_digits:
 .word bitmap_digit0
 .word bitmap_digit1
@@ -146,83 +144,41 @@ array_digits:
 .word bitmap_digit8
 .word bitmap_digit9
 
-coordinate_x:
-.word 0
+coordinate_x: .word 0
 
-coordinate_y:
-.word 0
+coordinate_y: .word 0
 
-file_handle_input:
-.word 0
+file_handle_input: .word 0
 
-file_handle_output:
-.word 0
+file_handle_output: .word 0
 
-file_buffer:
-.word 0
+file_buffer: .word 0
 
-data_size:
-.word 0
+data_size: .word 0
 
-color_index:
-.word 0
+color_index: .word 0
 
-pixel_array_pointer:
-.word 0
+pixel_array_pointer: .word 0
 
-file_name_input:
-.asciiz "source.bmp"
+file_name_input: .asciiz "source.bmp"
 
-file_name_output:
-.asciiz "destination.bmp"
+file_name_output: .asciiz "destination.bmp"
 
-prompt_number:
-.asciiz "Type the floating point number: "
+prompt_number: .asciiz "Type the floating point number: "
 
-prompt_coordinate_x:
-.asciiz "Type the X coordinate: "
+prompt_coordinate_x: .asciiz "Type the X coordinate: "
 
-prompt_coordinate_y:
-.asciiz "Type the Y coordinate: "
+prompt_coordinate_y: .asciiz "Type the Y coordinate: "
 
-chunk_bitmap_width:
-.asciiz "bitmap width: "
+chunk_bitmap_width: .asciiz "bitmap width: "
 
-chunk_bitmap_height:
-.asciiz "bitmap height: "
+chunk_bitmap_height: .asciiz "bitmap height: "
 
-chunk_bitmap_bits_per_pixel:
-.asciiz "bitmap bits per pixel: "
+chunk_bitmap_bits_per_pixel: .asciiz "bitmap bits per pixel: "
 
-chunk_bitmap_header_size:
-.asciiz "bitmap header size: "
+chunk_bitmap_header_size: .asciiz "bitmap header size: "
 
-error_read_file:
-.asciiz "Couldn't open file for reading!\n"
-
-error_read_header:
-.asciiz "Couldn't read header from input file!\n"
-
-error_wrong_signature:
-.asciiz "This file doesn't have the proper signature!\n"
-
-error_wrong_size:
-.asciiz "The bitmap file isn't exactly of size 320x240!\n"
-
-error_unsupported_bits_per_pixel:
-.asciiz "This program only supports bitmaps that use 8-bits per pixel!\n"
-
-error_unsupported_header_size:
-.asciiz "This program expects the header size to be 40 bytes!\n"
-
-error_compression:
-.asciiz "Unsupported compression scheme!\n"
-
-error_big_file:
-.asciiz "This file exceeds the 1MiB limit!\n"
-
-error_write_file:
-.asciiz "Failed to write to file!\n"
+error_string: .asciiz "Couldn't open file for reading!\n"
 
 line_break:
 .asciiz "\n"
@@ -270,7 +226,7 @@ main_read_bitmap:
 	li $v0, 13
 	syscall                               # open file
 
-	blt $v0, $zero, main_read_bitmap_failure1
+	blt $v0, $zero, main_error
 
 	la $at, file_handle_input
 	sw $v0, 0($at)
@@ -281,7 +237,7 @@ main_read_bitmap:
 	li $v0, 14
 	syscall                               # read file
 
-	blt $v0, $a2, main_read_bitmap_failure2
+	blt $v0, $a2, main_error
 
 	la $at, bitmap_header
 	lhu $t1, 0($at)
@@ -292,7 +248,7 @@ main_read_bitmap:
 	li $t0, BITMAP_SIGNATURE2
 	beq $t1, $t0, main_read_bitmap_correct_signature
 
-	b main_read_bitmap_failure3
+	b main_error
 
 main_read_bitmap_correct_signature:
 
@@ -300,7 +256,7 @@ main_read_bitmap_correct_signature:
 	lbu $t0, 30($at)
 
 	# expects compression method 0 (uncompressed)
-	bne $t0, $zero, main_read_bitmap_failure4
+	bne $t0, $zero, main_error
 
 	# $t0 = bitmap width, $t1 = bitmap height
 	move $t0, $zero
@@ -365,10 +321,10 @@ main_read_bitmap_correct_signature:
 	syscall                               # print string
 
 	li $t2, EXPECTED_BITMAP_WIDTH
-	bne $t0, $t2, main_read_bitmap_failure5
+	bne $t0, $t2, main_error
 
 	li $t2, EXPECTED_BITMAP_HEIGHT
-	bne $t1, $t2, main_read_bitmap_failure5
+	bne $t1, $t2, main_error
 
 	# $t0 = bitmap bits per pixel
 	move $t0, $zero
@@ -401,7 +357,7 @@ main_read_bitmap_correct_signature:
 	syscall                               # print string
 
 	li $t1, EXPECTED_BITMAP_BITS_PER_PIXEL
-	bne $t1, $t0, main_read_bitmap_failure6
+	bne $t1, $t0, main_error
 
 	# $t0 = bitmap DIB header size
 	move $t0, $zero
@@ -434,7 +390,7 @@ main_read_bitmap_correct_signature:
 	syscall                               # print string
 
 	li $t1, EXPECTED_BITMAP_HEADER_SIZE
-	bne $t1, $t0, main_read_bitmap_failure7
+	bne $t1, $t0, main_error
 
 	# $t0 = file size, reads little-endian number
 	move $t0, $zero
@@ -456,7 +412,7 @@ main_read_bitmap_correct_signature:
 
 	li $t1, ONE_MEBIBYTE
 
-	blt $t1, $t0, main_read_bitmap_failure8
+	blt $t1, $t0, main_error
 
 	li $t1, BITMAP_HEADER_SIZE
 	subu $t0, $t0, $t1
@@ -477,7 +433,7 @@ main_read_bitmap_correct_signature:
 	li $v0, 14
 	syscall                               # read file
 
-	blt $v0, $zero, main_read_bitmap_failure1
+	blt $v0, $zero, main_error
 
 	la $at, data_size
 	sw $v0, 0($at)
@@ -565,74 +521,14 @@ main_pixel_array_offset:
 
 	b main_user_input
 
-main_read_bitmap_failure1:
-
-	la $a0, error_read_file
+main_error:
+	la $a0, error_string
 	li $v0, 4
-	syscall                               # print string
-
-	j main_program_end
-
-main_read_bitmap_failure2:
-
-	la $a0, error_read_header
-	li $v0, 4
-	syscall                               # print string
-
-	j main_program_end
-
-main_read_bitmap_failure3:
-
-	la $a0, error_wrong_signature
-	li $v0, 4
-	syscall                               # print string
-
-	j main_program_end
-
-main_read_bitmap_failure4:
-
-	la $a0, error_compression
-	la $v0, 4
-	syscall                               # print string
-
-	j main_program_end
-
-main_read_bitmap_failure5:
-
-	la $a0, error_wrong_size
-	la $v0, 5
-	syscall                               # print string
-
-	j main_program_end
-
-main_read_bitmap_failure6:
-
-	la $a0, error_unsupported_bits_per_pixel
-	la $v0, 4
-	syscall                               # print string
-
-	j main_program_end
-
-main_read_bitmap_failure7:
-
-	la $a0, error_unsupported_header_size
-	la $v0, 4
-	syscall                               # print string
-
-	j main_program_end
-
-main_read_bitmap_failure8:
-
-	la $a0, error_big_file
-	la $v0, 4
 	syscall                               # print string
 
 	j main_program_end
 
 main_user_input:
-
-	# asks the user for a floating-point number
-
 	la $a0, prompt_number
 	li $v0, 4
 	syscall                               # print string
@@ -641,8 +537,6 @@ main_user_input:
 	li $a1, INPUT_LIMIT
 	li $v0, 8
 	syscall                               # read string
-
-	# asks the user for the x coordinate for the origin point
 
 	la $a0, prompt_coordinate_x
 	li $v0, 4
@@ -675,22 +569,18 @@ main_draw_text_loop:
 	addiu $s0, $s0, 1
 
 	# if null character found, break loop
-
 	lbu $t0, 0($s0)
-	beq $t0, $zero, main_draw_text_end
+	beq $t0, $zero, main_write_file
 
 	# dot found, print it.
-
 	li $t1, '.'
 	beq $t0, $t1, main_draw_text_dot
 
 	# ignore characters after '9'
-
 	li $t1, '9'
 	bgt $t0, $t1, main_draw_text_loop
 
 	# ignore characters before '0'
-
 	li $t1, '0'
 	blt $t0, $t1 main_draw_text_loop
 
@@ -745,9 +635,6 @@ main_draw_text_next_tile:
 
 	b main_draw_text_loop
 
-main_draw_text_end:
-
-
 main_write_file:
 
 	la $a0, file_name_output
@@ -756,7 +643,7 @@ main_write_file:
 	li $v0, 13
 	syscall                               # open file
 
-	blt $v0, $zero, main_write_bitmap_failure1
+	blt $v0, $zero, main_error
 
 	la $at, file_handle_output
 	sw $v0, 0($at)
@@ -770,7 +657,7 @@ main_write_file:
 	li $v0, 15
 	syscall                               # write file
 
-	blt $v0, $zero, main_write_bitmap_failure1
+	blt $v0, $zero, main_error
 
 	la $a0, file_handle_output
 	lw $a0, 0($a0)
@@ -785,14 +672,6 @@ main_write_file:
 	syscall                               # write file
 
 	b main_program_end
-
-main_write_bitmap_failure1:
-
-	la $a0, error_write_file
-	la $v0, 4
-	syscall                               # print string
-
-	j main_program_end
 
 
 main_program_end:
@@ -872,7 +751,7 @@ draw_tile_row_loop:
 
 draw_tile_row_pixel:
 	subu $t5, $t4, $t0
-	li $a3, 0x00000000
+	la $a3, PAINT_COLOR
 	sb $a3, 0($t5)
 	sb $a3, 1($t5)
 	sb $a3, 2($t5)
