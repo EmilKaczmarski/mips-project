@@ -532,7 +532,7 @@ draw_tile:
 
 	li $t4, ARRAY_PIXELS_SIZE
 	addu $t4, $t4, $t0
-	subu $t4, $t4, 1
+	
 	# $a2 = $a2 * ROW_SIZE
 	li $at, ROW_SIZE
 	multu $a2, $at
@@ -547,7 +547,7 @@ draw_tile:
 	li $at, TILE_STRIDE
 	addu $t1, $t0, $at
 
-	addiu $t0, $t0, 8
+	addiu $t0, $t0, -24
 
 draw_tile_loop:
 
