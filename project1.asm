@@ -30,6 +30,7 @@
 
 # color for painting the numbers on the bitmap
 .eqv PAINT_COLOR 0x00000000 # black
+.eqv BACKGROUND_COLOR 0x00FFFFFF # white
 
 bitmap_header: .space BITMAP_HEADER_SIZE
 
@@ -189,10 +190,10 @@ main_read_bitmap:
 
 	li $a0, ONE_MEBIBYTE
 	li $v0, 9
-	syscall                               # alloct7e memory
+	syscall                               # allocate memory
 	
-	la $t7, file_buffer
-	sw $v0, 0($t7)	
+	la $t5, file_buffer
+	sw $v0, 0($t5)	
 
 	la $a0, file_name_input
 	li $a1, 0
@@ -202,8 +203,8 @@ main_read_bitmap:
 
 	blt $v0, $zero, main_error
 
-	la $t7, file_handle_input
-	sw $v0, 0($t7)
+	la $t5, file_handle_input
+	sw $v0, 0($t5)
 
 	move $a0, $v0
 	la $a1, bitmap_header
@@ -213,8 +214,8 @@ main_read_bitmap:
 
 	blt $v0, $a2, main_error
 
-	la $t7, bitmap_header
-	lhu $t1, 0($t7)
+	la $t5, bitmap_header
+	lhu $t1, 0($t5)
 
 check_compression_and_size:
 	
@@ -224,7 +225,7 @@ check_compression_and_size:
 	# -> width and height are equal to expected
 	#######
 
-	lbu $t0, 30($t7)
+	lbu $t0, 30($t5)
 
 	# expects compression method 0 (uncompressed)
 	bne $t0, $zero, main_error
@@ -235,35 +236,35 @@ check_compression_and_size:
 
 	# loads little-endian word into $t1
 
-	lbu $t2, 22($t7)
+	lbu $t2, 22($t5)
 	or $t1, $t1, $t2
 
-	lbu $t2, 23($t7)
+	lbu $t2, 23($t5)
 	sll $t2, $t2, 8
 	or $t1, $t1, $t2
 
-	lbu $t2, 24($t7)
+	lbu $t2, 24($t5)
 	sll $t2, $t2, 16
 	or $t1, $t1, $t2
 
-	lbu $t2, 25($t7)
+	lbu $t2, 25($t5)
 	sll $t2, $t2, 24
 	or $t1, $t1, $t2
 
 	# loads little-endian word into $t1 
 
-	lbu $t2, 18($t7)
+	lbu $t2, 18($t5)
 	or $t0, $t0, $t2
 
-	lbu $t2, 19($t7)
+	lbu $t2, 19($t5)
 	sll $t2, $t2, 8
 	or $t0, $t0, $t2
 
-	lbu $t2, 20($t7)
+	lbu $t2, 20($t5)
 	sll $t2, $t2, 16
 	or $t0, $t0, $t2
 
-	lbu $t2, 21($t7)
+	lbu $t2, 21($t5)
 	sll $t2, $t2, 24
 	or $t0, $t0, $t2
 
@@ -306,8 +307,8 @@ check_compression_and_size:
 	# reads the remainder of the file
 read_file_remainder:
 
-	la $t7, file_handle_input
-	lw $a0, 0($t7)
+	la $t5, file_handle_input
+	lw $a0, 0($t5)
 
 	la $a1, file_buffer
 	lw $a1, 0($a1)
@@ -319,41 +320,41 @@ read_file_remainder:
 
 	blt $v0, $zero, main_error
 
-	la $t7, data_size
-	sw $v0, 0($t7)
+	la $t5, data_size
+	sw $v0, 0($t5)
 
 
 main_pixel_array_offset:
 
-	la $t7, bitmap_header
+	la $t5, bitmap_header
 
 	# $t0 = count of colors in palette
 	move $t0, $zero
 	
-	lbu $t1, 10($t7)
+	lbu $t1, 10($t5)
 	or $t0, $t0, $t1
 
-	lbu $t1, 11($t7)
+	lbu $t1, 11($t5)
 	sll $t1, $t1, 8
 	or $t0, $t0, $t1
 
-	lbu $t1, 12($t7)
+	lbu $t1, 12($t5)
 	sll $t1, $t1, 16
 	or $t0, $t0, $t1
 
-	lbu $t1, 13($t7)
+	lbu $t1, 13($t5)
 	sll $t1, $t1, 24
 	or $t0, $t0, $t1
 
 	subiu $t0, $t0, BITMAP_HEADER_SIZE
 
-	la $t7, file_buffer
-	lw $t7, 0($t7)
+	la $t5, file_buffer
+	lw $t5, 0($t5)
 
-	addu $t0, $t0, $t7
+	addu $t0, $t0, $t5
 
-	la $t7, pixel_array_pointer
-	sw $t0, 0($t7)
+	la $t5, pixel_array_pointer
+	sw $t0, 0($t5)
 
 	b main_user_input
 
@@ -434,11 +435,11 @@ main_draw_text_digit:
 	addu $a0, $a0, $t0
 	lw $a0, 0($a0)
 
-	la $t7, coordinate_x
-	lw $a1, 0($t7)
+	la $t5, coordinate_x
+	lw $a1, 0($t5)
 
-	la $t7, coordinate_y
-	lw $a2, 0($t7)
+	la $t5, coordinate_y
+	lw $a2, 0($t5)
 
 	li $a3, PAINT_COLOR
 	
@@ -452,11 +453,11 @@ main_draw_text_dot:
 
 	la $a0, bitmap_dot
 
-	la $t7, coordinate_x
-	lw $a1, 0($t7)
+	la $t5, coordinate_x
+	lw $a1, 0($t5)
 
-	la $t7, coordinate_y
-	lw $a2, 0($t7)
+	la $t5, coordinate_y
+	lw $a2, 0($t5)
 
 	li $a3, PAINT_COLOR
 	
@@ -483,8 +484,8 @@ main_write_file:
 
 	blt $v0, $zero, main_error
 
-	la $t7, file_handle_output
-	sw $v0, 0($t7)
+	la $t5, file_handle_output
+	sw $v0, 0($t5)
 
 	move $a0, $v0
 
@@ -527,15 +528,15 @@ main_program_end:
 draw_tile:
 
 	# $t4 = pointer to end of pixels array
-	la $t7, pixel_array_pointer
-	lw $t0, ($t7)
+	la $t5, pixel_array_pointer
+	lw $t0, ($t5)
 
 	li $t4, ARRAY_PIXELS_SIZE
 	addu $t4, $t4, $t0
 	
 	# $a2 = $a2 * ROW_SIZE
-	li $t7, ROW_SIZE
-	multu $a2, $t7
+	li $t5, ROW_SIZE
+	multu $a2, $t5
 	mflo $a2
 
 	# $t0 = offset
@@ -546,8 +547,8 @@ draw_tile:
 	addu $t0, $t0, $a2
 
 	# $t1 = limit address, marks end of bitmap
-	li $t7, TILE_STRIDE
-	addu $t1, $t0, $t7
+	li $t5, TILE_STRIDE
+	addu $t1, $t0, $t5
 
 	addiu $t0, $t0, -24
 	
@@ -563,8 +564,8 @@ draw_tile_row_loop:
 	# all pixels for this row have been drawn, move to the next
 	beq $t2, $t3, draw_tile_row_end
 
-	lbu $t7, 0($a0)
-	beq $t7, $zero, draw_tile_row_loop_continue
+	lbu $t5, 0($a0)
+	beq $t5, $zero, draw_background_pixel
 
 draw_tile_row_pixel:
 	subu $t5, $t4, $t0
@@ -574,9 +575,20 @@ draw_tile_row_pixel:
 	sb $a3, 1($t5)  #store G
 	srl $a2,$a2,8
 	sb $a3, 2($t5)  #store R
+	j draw_tile_row_loop_continue
+
+draw_background_pixel:
+	subu $t5, $t4, $t0
+	la $a3, BACKGROUND_COLOR
+	sb $a3, 0($t5)	#store B
+	srl $a2,$a2,8
+	sb $a3, 1($t5)  #store G
+	srl $a2,$a2,8
+	sb $a3, 2($t5)  #store R
+	j draw_tile_row_loop_continue
 
 draw_tile_row_loop_continue:
-
+	
 	addiu $t0, $t0, 3
 	addiu $t2, $t2, 1
 	addiu $a0, $a0, 1
@@ -585,12 +597,12 @@ draw_tile_row_loop_continue:
 draw_tile_row_end:
 
 	# moves pointer to the next row
-	li $t7, ROW_SIZE
-	addu $t0, $t0, $t7
+	li $t5, ROW_SIZE
+	addu $t0, $t0, $t5
 
 	# moves pointer to start of tile row, t7 the left
-	li $t7, TILE_ROW_SIZE
-	subu $t0, $t0, $t7
+	li $t5, TILE_ROW_SIZE
+	subu $t0, $t0, $t5
 
 	b draw_tile_loop
 
