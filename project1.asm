@@ -190,6 +190,7 @@ main:
 	jal read_file_remainder
 	jal main_pixel_array_offset
 	jal main_user_input
+	j main_draw_text_loop
 	
 check_compression_and_size:
 	
@@ -357,6 +358,8 @@ main_user_input:
 	# loop for drawing the input flot7ing-point number
 	la $s0, input_buffer
 	addiu $s0, $s0, -1
+
+	jr $ra
 
 main_draw_text_loop:
 
