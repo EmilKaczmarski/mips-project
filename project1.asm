@@ -468,7 +468,7 @@ main_draw_text_next_tile:
 
 	la $t0, coordinate_x
 	lw $t1, 0($t0)
-	addiu $t1, $t1, 24
+	addiu $t1, $t1, 8
 	sw $t1, 0($t0)
 
 	b main_draw_text_loop
@@ -541,7 +541,13 @@ draw_tile:
 	# $t0 = offset
 	li $t0, ROW_SIZE
 	subu $t0, $t0, $a1
+	subu $t0, $t0, $a1
+	subu $t0, $t0, $a1
 	addu $t0, $t0, $a2
+
+	#move $a0, $t0
+	#li $v0, 
+	#syscall
 
 	# $t1 = limit address, marks end of bitmap
 	li $at, TILE_STRIDE
@@ -549,6 +555,9 @@ draw_tile:
 
 	addiu $t0, $t0, -24
 
+	#move $a0, $a1
+	#li $v0, 4
+	#syscall
 draw_tile_loop:
 
 	bge $t0, $t1, draw_tile_end
@@ -567,9 +576,11 @@ draw_tile_row_loop:
 draw_tile_row_pixel:
 	subu $t5, $t4, $t0
 	la $a3, PAINT_COLOR
-	sb $a3, 0($t5)
-	sb $a3, 1($t5)
-	sb $a3, 2($t5)
+	sb $a3, 0($t5)	#store B
+	srl $a2,$a2,8
+	sb $a3, 1($t5)  #store G
+	srl $a2,$a2,8
+	sb $a3, 2($t5)  #store R
 
 draw_tile_row_loop_continue:
 
