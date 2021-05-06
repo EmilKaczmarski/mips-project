@@ -141,8 +141,8 @@ bitmap_dot: # '.'
 .byte 0, 0, 0, 0, 0, 0, 0, 0
 .byte 0, 0, 0, 0, 0, 0, 0, 0
 .byte 0, 0, 0, 0, 0, 0, 0, 0
-.byte 0, 0, 0, 0, 0, 1, 1, 0
-.byte 0, 0, 0, 0, 0, 1, 1, 0
+.byte 0, 0, 0, 1, 1, 0, 0, 0
+.byte 0, 0, 0, 1, 1, 0, 0, 0
 
 array_digits:
 .word bitmap_digit0
@@ -185,38 +185,12 @@ input_buffer: .space 64
 #######
 main:
 	# $t0 = compression method
-
-main_read_bitmap:
-
-	li $a0, ONE_MEBIBYTE
-	li $v0, 9
-	syscall                               # allocate memory
+	jal main_read_bitmap
+	jal check_compression_and_size
+	jal read_file_remainder
+	jal main_pixel_array_offset
+	jal main_user_input
 	
-	la $t5, file_buffer
-	sw $v0, 0($t5)	
-
-	la $a0, file_name_input
-	li $a1, 0
-	li $a2, 0
-	li $v0, 13
-	syscall                               # open file
-
-	blt $v0, $zero, main_error
-
-	la $t5, file_handle_input
-	sw $v0, 0($t5)
-
-	move $a0, $v0
-	la $a1, bitmap_header
-	li $a2, BITMAP_HEADER_SIZE
-	li $v0, 14
-	syscall                               # read file
-
-	blt $v0, $a2, main_error
-
-	la $t5, bitmap_header
-	lhu $t1, 0($t5)
-
 check_compression_and_size:
 	
 	#######
@@ -303,26 +277,7 @@ check_compression_and_size:
 	la $t0, data_size
 	li $t1, BITMAP_HEADER_SIZE
 	subu $t0, $t0, $t1
-
-	# reads the remainder of the file
-read_file_remainder:
-
-	la $t5, file_handle_input
-	lw $a0, 0($t5)
-
-	la $a1, file_buffer
-	lw $a1, 0($a1)
-
-	move $a2, $t0
-
-	li $v0, 14
-	syscall                               # read file
-
-	blt $v0, $zero, main_error
-
-	la $t5, data_size
-	sw $v0, 0($t5)
-
+	jr $ra
 
 main_pixel_array_offset:
 
@@ -356,7 +311,7 @@ main_pixel_array_offset:
 	la $t5, pixel_array_pointer
 	sw $t0, 0($t5)
 
-	b main_user_input
+	jr $ra
 
 main_error:
 	la $a0, error_string
@@ -465,14 +420,149 @@ main_draw_text_dot:
 
 main_draw_text_next_tile:
 
-	# increases x coordinate of origin point by 24
-
 	la $t0, coordinate_x
 	lw $t1, 0($t0)
 	addiu $t1, $t1, 8
 	sw $t1, 0($t0)
 
 	b main_draw_text_loop
+
+
+main_program_end:
+	li $v0, 10
+	syscall
+
+#######
+# draw_tile:
+# 
+# ARGUMENTS:
+# $a0: pointer to tile to be printed
+# $a1: coordinate x
+# $a2: coordinate y
+########
+draw_tile:
+
+	# $t4 = pointer to end of pixels array
+	la $t5, pixel_array_pointer
+	lw $t0, ($t5)
+
+	li $t4, ARRAY_PIXELS_SIZE
+	addu $t4, $t4, $t0
+	
+	# $a2 = $a2 * ROW_SIZE
+	li $t5, ROW_SIZE
+	multu $a2, $t5
+	mflo $a2
+
+	# $t0 = offset
+	li $t0, ROW_SIZE
+
+	li $t5, 3
+	multu $a1, $t5
+	mflo $a1
+	subu $t0, $t0, $a1
+	addu $t0, $t0, $a2
+
+	# $t1 = limit address, marks end of bitmap
+	li $t5, TILE_STRIDE
+	addu $t1, $t0, $t5
+
+	addiu $t0, $t0, -24
+	
+	li $t6, 0 # height ctr
+draw_tile_loop:
+
+	li $t3, 8 # pixels in a row
+	
+	bge $t6, $t3, draw_tile_end
+	bge $t0, $t1, draw_tile_end
+	addiu $t6, $t6, 1
+	move $t2, $zero
+
+draw_tile_row_loop:
+
+	# all pixels for this row have been drawn, move to the next
+	beq $t2, $t3, draw_tile_row_end
+
+	lbu $t5, 0($a0)
+	beq $t5, $zero, draw_background_pixel
+
+draw_tile_row_pixel:
+	subu $t5, $t4, $t0
+	la $a3, PAINT_COLOR
+	sb $a3, 0($t5)	#store B
+	srl $a2,$a2,8
+	sb $a3, 1($t5)  #store G
+	srl $a2,$a2,8
+	sb $a3, 2($t5)  #store R
+	j draw_tile_row_loop_continue
+
+draw_background_pixel:
+
+	subu $t5, $t4, $t0
+	la $a3, BACKGROUND_COLOR
+	sb $a3, 0($t5)	#store B
+	srl $a2,$a2,8
+	sb $a3, 1($t5)  #store G
+	srl $a2,$a2,8
+	sb $a3, 2($t5)  #store R
+
+draw_tile_row_loop_continue:
+	
+	addiu $t0, $t0, 3
+	addiu $t2, $t2, 1
+	addiu $a0, $a0, 1
+	b draw_tile_row_loop
+
+draw_tile_row_end:
+	# all pixels for this row have been drawn, move to the next
+	# moves pointer to the next row
+	li $t5, ROW_SIZE
+	addu $t0, $t0, $t5
+
+	# moves pointer to start of tile row, t5 the left
+	li $t5, TILE_ROW_SIZE
+	subu $t0, $t0, $t5
+
+	b draw_tile_loop
+
+draw_tile_end:
+
+	jr $ra
+
+
+#READ AND WRITE BITMAP
+main_read_bitmap:
+
+	li $a0, ONE_MEBIBYTE
+	li $v0, 9
+	syscall                               # allocate memory
+	
+	la $t5, file_buffer
+	sw $v0, 0($t5)	
+
+	la $a0, file_name_input
+	li $a1, 0
+	li $a2, 0
+	li $v0, 13
+	syscall                               # open file
+
+	blt $v0, $zero, main_error
+
+	la $t5, file_handle_input
+	sw $v0, 0($t5)
+
+	move $a0, $v0
+	la $a1, bitmap_header
+	li $a2, BITMAP_HEADER_SIZE
+	li $v0, 14
+	syscall                               # read file
+
+	blt $v0, $a2, main_error
+
+	la $t5, bitmap_header
+	lhu $t1, 0($t5)
+	jr $ra
 
 main_write_file:
 
@@ -512,100 +602,23 @@ main_write_file:
 
 	b main_program_end
 
-
-main_program_end:
-	li $v0, 10
-	syscall
-
-#######
-# draw_tile:
-# 
-# ARGUMENTS:
-# $a0: pointer to tile to be printed
-# $a1: coordinate x
-# $a2: coordinate y
-########
-draw_tile:
-
-	# $t4 = pointer to end of pixels array
-	la $t5, pixel_array_pointer
-	lw $t0, ($t5)
-
-	li $t4, ARRAY_PIXELS_SIZE
-	addu $t4, $t4, $t0
 	
-	# $a2 = $a2 * ROW_SIZE
-	li $t5, ROW_SIZE
-	multu $a2, $t5
-	mflo $a2
+read_file_remainder:
+	# reads the remainder of the file
 
-	# $t0 = offset
-	li $t0, ROW_SIZE
-	subu $t0, $t0, $a1
-	subu $t0, $t0, $a1
-	subu $t0, $t0, $a1
-	addu $t0, $t0, $a2
+	la $t5, file_handle_input
+	lw $a0, 0($t5)
 
-	# $t1 = limit address, marks end of bitmap
-	li $t5, TILE_STRIDE
-	addu $t1, $t0, $t5
+	la $a1, file_buffer
+	lw $a1, 0($a1)
 
-	addiu $t0, $t0, -24
-	
-draw_tile_loop:
+	move $a2, $t0
 
-	bge $t0, $t1, draw_tile_end
+	li $v0, 14
+	syscall                               # read file
 
-	move $t2, $zero
-	li $t3, 8 # pixels in a row
+	blt $v0, $zero, main_error
 
-draw_tile_row_loop:
-
-	# all pixels for this row have been drawn, move to the next
-	beq $t2, $t3, draw_tile_row_end
-
-	lbu $t5, 0($a0)
-	beq $t5, $zero, draw_background_pixel
-
-draw_tile_row_pixel:
-	subu $t5, $t4, $t0
-	la $a3, PAINT_COLOR
-	sb $a3, 0($t5)	#store B
-	srl $a2,$a2,8
-	sb $a3, 1($t5)  #store G
-	srl $a2,$a2,8
-	sb $a3, 2($t5)  #store R
-	j draw_tile_row_loop_continue
-
-draw_background_pixel:
-	subu $t5, $t4, $t0
-	la $a3, BACKGROUND_COLOR
-	sb $a3, 0($t5)	#store B
-	srl $a2,$a2,8
-	sb $a3, 1($t5)  #store G
-	srl $a2,$a2,8
-	sb $a3, 2($t5)  #store R
-	j draw_tile_row_loop_continue
-
-draw_tile_row_loop_continue:
-	
-	addiu $t0, $t0, 3
-	addiu $t2, $t2, 1
-	addiu $a0, $a0, 1
-	b draw_tile_row_loop
-
-draw_tile_row_end:
-
-	# moves pointer to the next row
-	li $t5, ROW_SIZE
-	addu $t0, $t0, $t5
-
-	# moves pointer to start of tile row, t7 the left
-	li $t5, TILE_ROW_SIZE
-	subu $t0, $t0, $t5
-
-	b draw_tile_loop
-
-draw_tile_end:
-
+	la $t5, data_size
+	sw $v0, 0($t5)
 	jr $ra
